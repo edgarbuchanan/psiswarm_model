@@ -1,34 +1,66 @@
-cmake_minimum_required(VERSION 2.8)
+#
+# Set minimum required version
+#
+cmake_minimum_required(VERSION 3.8.0)
 
+#
+# Set build options
+#
+include(${CMAKE_SOURCE_DIR}/cmake/ARGoSBuildOptions.cmake)
+
+#
+# Project name
+#
+project(argos3_${ARGOS_BUILD_FOR})
+
+#
 # Deactivate RPATH for MacOSX
+#
 set(CMAKE_MACOSX_RPATH 0)
 
-# Set the path where CMake will find additional scripts
+#
+# Set the path additional cmake files must be searched for
+#
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR}/cmake)
 
-# Set build options
-set(ARGOS_BUILD_FOR "simulator")
-set(ARGOS_BUILD_FOR_SIMULATOR TRUE)
+#
+# Set CMake policies to select wanted behaviors
+#
+# Use new policies introduced up to this version
+cmake_policy(VERSION 2.8.12)
+if(POLICY CMP0042)
+  cmake_policy(SET CMP0042 NEW)
+endif(POLICY CMP0042)
 
+#
+# Include path points to the base source dir
+#
+include_directories(${CMAKE_SOURCE_DIR} ${CMAKE_BINARY_DIR})
+
+#
+# Make sure we are under Unix
+#
+if(NOT UNIX)
+  message(FATAL_ERROR "ARGoS compiles only under UNIX, sorry!")
+endif(NOT UNIX)
+
+#
 # Set compiler flags
+#
 include(${CMAKE_SOURCE_DIR}/cmake/ARGoSBuildFlags.cmake)
 
-# Find the ARGoS package, make sure to save the ARGoS prefix
-find_package(PkgConfig)
-pkg_check_modules(ARGOS REQUIRED argos3_simulator)
-set(ARGOS_PREFIX ${ARGOS_PREFIX} CACHE INTERNAL "")
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${ARGOS_PREFIX}/share/argos3/cmake)
+#
+# Check for libraries
+#
+include(${CMAKE_SOURCE_DIR}/cmake/ARGoSBuildChecks.cmake)
 
-# Check for Lua 5.2
-find_package(Lua52 REQUIRED)
-include_directories(${LUA_INCLUDE_DIR})
+#
+# Set up CPack for later use
+#
+include(${CMAKE_SOURCE_DIR}/cmake/ARGoSPackaging.cmake)
 
-# Check for Qt and OpenGL
-include(ARGoSCheckQTOpenGL)
-
-# Set up ARGoS compilation information
-include_directories(${CMAKE_SOURCE_DIR} ${ARGOS_INCLUDE_DIRS} ${LUA_INCLUDE_DIR})
-link_directories(${ARGOS_LIBRARY_DIRS})
-
-# Descend into the plugins directory
+#
+# Compile stuff
+#
 add_subdirectory(plugins)
+#add_subdirectory(examples)

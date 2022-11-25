@@ -1,0 +1,2 @@
+/usr/bin/ar qc libargos3plugin_simulator_psilib.a  CMakeFiles/argos3plugin_simulator_psilib.dir/argos3plugin_simulator_psilib_autogen/mocs_compilation.cpp.o
+/usr/bin/ranlib libargos3plugin_simulator_psilib.a
